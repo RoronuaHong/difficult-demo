@@ -1,0 +1,14 @@
+.tab-list {
+  display: flex;
+  li {
+    flex-grow: 1;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .actives {
+    background: red;
+    color: #fff;
+  }
+}
