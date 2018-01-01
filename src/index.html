@@ -19,6 +19,25 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=0" name="viewport">
 </head>
 <body>
+    <script>
 
+        //异步流程控制
+        function p1() {
+            return new Promise((resolve, reject) => {
+                console.log(1);
+                setTimeout(() => {
+                    resolve(123);
+                }, 498);
+            });
+        }
+
+        setTimeout(() => {
+            console.log(321);
+        }, 500);
+
+        p1().then((data) => {
+            console.log(data);
+        });
+    </script>
 </body>
 </html>
