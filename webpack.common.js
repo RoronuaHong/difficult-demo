@@ -30,6 +30,21 @@ const confTitle = [
         name: "newpromise",
         dir: "cn\\",
         title: "promise的构造"
+    },
+    {
+        name: "typedetection",
+        dir: "cn\\",
+        title: "typedetection"
+    },
+    {
+        name: "redux",
+        dir: "cn\\",
+        title: "Redux"
+    },
+    {
+        name: "todo",
+        dir: "cn\\",
+        title: "Todo"
     }
 ];
 
@@ -38,7 +53,9 @@ const config = {
     entry: {
         index: "./src/js/index.js",
         promise: "./src/js/promise.js",
-        newpromise: "./src/js/newpromise.js"
+        newpromise: "./src/js/newpromise.js",
+        typedetection: "./src/js/typedetection.js",
+        redux: "./src/js/redux.js"
     },
     output: {
         publicPath: "/",

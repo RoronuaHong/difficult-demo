@@ -117,6 +117,24 @@
     // }).catch((data) => {
     //     console.log(data);
     // });
+    // console.log("aaa");
+    // const pp = Promise.resolve({
+    //     then() {
+    //         console.log(123);
+    //     }
+    // });
+
+    function bb(aa) {
+        console.log(aa);
+    }
+
+    bb(aa.call(this));
+
+    function aa() {
+        console.log(1234);
+    }
+
+    // pp.then(data=> console.log(data));
 
     //promise的实现
     function Promises(executor) {
@@ -139,7 +157,7 @@
                 self.status = 'resolved'
                 self.data = value
                 for(var i = 0; i < self.onResolvedCallback.length; i++) {
-                    self.onResolvedCallback[i](value)
+                    self.onResolvedCallback[i](value);
                 }
             }
         }
@@ -311,6 +329,6 @@
     .then()
     .then(data => console.log(data))
     .catch((data) => {
-        console.log(data);
+        // console.log(data);
     });
 })();

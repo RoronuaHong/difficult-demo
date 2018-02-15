@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "karma-coverage": "^1.1.1",
-    "karma-jasmine": "^1.1.0"
+    "karma-jasmine": "^1.1.0",
+    "redux": "^3.7.2"
   }
 }

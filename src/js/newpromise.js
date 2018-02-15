@@ -1,56 +1,173 @@
-/*
+;(function() {
+    function Newpromise(executor) {
+        const that = this;
 
-    Newpromise的调用顺序
+        //状态
+        that.status = "pending",
+        that.data = "",
 
+        //存储函数的数组
+        that.onResolvedCallback = [],
+        that.onRejectedCallback = [];
 
- */
+        //回调函数的2个参数: resolve, reject:
+        function resolve(value) {
+            setTimeout(function() {
+                if (that.status === "pending") {
+                    that.status = "resolved";
+                    that.data = value;
 
-"use strict";
+                    for (let i = 0; i < that.onResolvedCallback.length; i++) {
 
-import asap from "./asap";
+                        //执行每一个回调函数
+                        that.onResolvedCallback[i](value);
+                    }
+                }
+            });
+        }
 
-//空函数
-function noop() {};
+        function reject(reason) {
+            setTimeout(function() {
+                if (that.status === "pending") {
+                    that.status = "rejected";
+                    that.data = reason;
 
-//存储错误, 用来做traceback的
-let LAST_ERROR = null,
+                    for (let i = 0; i < that.onRejectedCallback.length; i++) {
 
-    //枚举变量, 代表有错误
-    IS_ERROR = {};
+                        //执行每一个回调函数
+                        that.onRejectedCallback[i](value);
+                    }
+                }
+            });
+        }
 
-//获取then函数
-function getThen(obj) {
-    try {
-        return obj;
-    } catch(ex) {
-        LAST_ERROR = ex;
-        return IS_ERROR;
+        try {
+            executor(resolve.bind(this), reject.bind(this));
+        } catch(ex) {
+            reject.bind(this)(ex);
+        }
     }
-}
 
-//执行一次
-function tryCallOne(fn, a) {
-    try {
-        return fn(a);
-    } catch(ex) {
-        LAST_ERROR = ex;
-        return IS_ERROR;
+    Newpromise.prototype.then = function(onResolved, onRejected) {
+        const that = this;
+        let promise2;
+
+        onResolved = typeof onResolved === "function" ? onResolved : function(value) { return value }
+        onRejected = typeof onRejected === "function" ? onRejected: function(reason) { return reason }
+
+        if(that.status === "resolved") {
+            setTimeout(function() {
+                return promise2 = new Newpromise((resolve, reject) => {
+                    try {
+
+                        //执行当前函数
+                        const x = onResolved(that.data);
+
+                        //递归，最后的promise分解为非promise对象
+                        resolvePromise(promise2, x, resolve, reject);
+                    } catch (ex) {
+                        reject(ex);
+                    }
+                });
+            });
+        }
+
+        if(that.status === "pending") {
+            setTimeout(function() {
+                return promise2 = new Newpromise((resolve, reject) => {
+                    that.onResolvedCallback.push((value) => {
+                        try {
+                            const x = onResolved(that.data);
+
+                            resolvePromise(promise2, x, resolve, reject);
+                        } catch (ex) {
+                            reject(ex);
+                        }
+                    });
+
+                    that.onRejectedCallback.push((reason) => {
+                        try {
+                            const x = onRejected(that.data);
+
+                            resolvePromise(promise2, x, resolve, reject)
+                        } catch (ex) {
+                            reject(ex);
+                        }
+                    });
+                });
+            });
+        }
     }
-}
 
-//执行两次
-function tryCallTwo(fn, a, b) {
-    try {
-        return fn(a, b);
-    } catch(ex) {
-        LAST_ERROR = ex;
-        return IS_ERROR;
+    Newpromise.prototype.catch = function(onRejected) {
+        return this.then(null, onRejected);
+    };
+
+    function resolvePromise(promise2, x, resolve, reject) {
+        let then,
+            thenCallbackOrThrow = false;
+
+        if(promise2 === x) {
+            return reject(new TypeError("chaining cycle detacted for promise!"));
+        }
+
+        if(x instanceof Newpromise) {
+            if(x.status === "pending") {
+                x.then((value) => {
+                    resolvePromise(promise2, value, resolve, reject);
+                }, reject);
+            } else {
+                x.then(resolve, reject);
+            }
+
+            return;
+        }
+
+        if((x !== null) && ((typeof x === "object")) || (typeof x === "function")) {
+            try {
+                then = x.then;
+
+                if(typeof x === "function") {
+                    then.call(x, function rs(y) {
+                        if(thenCallbackOrThrow) {
+                            return;
+                        }
+
+                        thenCallbackOrThrow = true;
+
+                        return resolvePromise(promise2, y, resolve, reject);
+                    }, function rj(r) {
+                        if(thenCallbackOrThrow) {
+                            return;
+                        }
+
+                        return reject(r);
+                    });
+                } else {
+                    resolve(x);
+                }
+            } catch(ex) {
+                if(thenCallbackOrThrow) {
+                    return;
+                }
+                thenCallbackOrThrow = true;
+                return reject(ex);
+            }
+        } else {
+            resolve(x);
+        }
     }
-}
 
-//构建Newpromise函数
-module.exports = Newpromise;
+    function p1() {
+        return new Newpromise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(321);
+            }, 2000);
+        });
+    }
 
-function Newpromise(fn = noop) {
-    
-}
+    p1()
+    .then()
+    .then()
+    .then(data => console.log(data));
+})();
