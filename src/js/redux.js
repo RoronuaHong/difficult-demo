@@ -8,7 +8,7 @@ const createStore = (reducer) => {
     const dispatch = (action) => {
         state = reducer(state, action);
 
-        listeners.forEach((listener) => listener());
+        listeners.forEach(listener => listener());
     }
 
     const subscribe = (listener) => {
@@ -42,12 +42,10 @@ const render = () => {
 }
 
 const renders = () => {
-    console.log("abc"); 
+    console.log("abc");
 }
 
 store.subscribe(render);
-
-store.subscribe(renders);
 
 store.subscribe(renders);
 

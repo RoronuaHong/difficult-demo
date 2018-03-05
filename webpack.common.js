@@ -45,6 +45,11 @@ const confTitle = [
         name: "todo",
         dir: "cn\\",
         title: "Todo"
+    },
+    {
+        name: "scripttest",
+        dir: "cn\\",
+        title: "关于script的应用"
     }
 ];
 
@@ -55,7 +60,8 @@ const config = {
         promise: "./src/js/promise.js",
         newpromise: "./src/js/newpromise.js",
         typedetection: "./src/js/typedetection.js",
-        redux: "./src/js/redux.js"
+        redux: "./src/js/redux.js",
+        scripttest: "./src/js/scripttest"
     },
     output: {
         publicPath: "/",
